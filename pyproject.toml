@@ -9,7 +9,7 @@ description = "FastMCP server for browsing and searching TailwindPlus components
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "BryantDesigns"}
+    {name = "Tyler Bryant"}
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
