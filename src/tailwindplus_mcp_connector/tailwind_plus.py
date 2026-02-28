@@ -189,9 +189,9 @@ class TailwindPlus:
         self.download_duration = raw_data["download_duration"]
         self.downloader_version = raw_data["downloader_version"]
 
-        if Version(self.downloader_version) < Version("3.0.0-rc1"):
+        if Version(self.downloader_version) < Version("1.0.0"):
             raise ValueError(
-                f"TailwindPlus data requires downloader version >= 3.0.0-rc1 for mode support. "
+                f"TailwindPlus data requires downloader version >= 1.0.0. "
                 f"Found version {self.downloader_version}. Please regenerate the data file with a newer downloader version."
             )
 
