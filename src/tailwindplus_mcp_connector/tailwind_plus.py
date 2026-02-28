@@ -395,7 +395,9 @@ class TailwindPlus:
         snippet = self._get_snippet(full_name, framework, tailwind_version, mode)
 
         if snippet is None:
-            suggestions = self._suggestions_for_component_name(full_name, max_suggestions=5)
+            suggestions = self._suggestions_for_component_name(
+                full_name, max_suggestions=5
+            )
             raise ComponentNotFoundError(full_name, suggestions)
 
         return Component.from_snippet(snippet, self.version, full_name)
@@ -433,7 +435,9 @@ class TailwindPlus:
         snippet = self._get_snippet(full_name, framework, tailwind_version, mode)
 
         if snippet is None:
-            suggestions = self._suggestions_for_component_name(full_name, max_suggestions=5)
+            suggestions = self._suggestions_for_component_name(
+                full_name, max_suggestions=5
+            )
             raise ComponentNotFoundError(full_name, suggestions)
 
         return snippet["preview"]
