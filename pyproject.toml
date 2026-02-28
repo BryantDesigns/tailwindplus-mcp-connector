@@ -32,7 +32,7 @@ Repository = "https://github.com/BryantDesigns/tailwindplus-mcp-connector"
 Issues = "https://github.com/BryantDesigns/tailwindplus-mcp-connector/issues"
 
 [project.scripts]
-tailwindplus-mcp-connector = "mcp_tailwindplus:main"
+tailwindplus-mcp-connector = "tailwindplus_mcp_connector:main"
 
 # Development tool configuration
 [tool.ruff]
@@ -60,7 +60,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.ruff.lint.isort]
-known-first-party = ["mcp_tailwindplus"]
+known-first-party = ["tailwindplus_mcp_connector"]
 
 [tool.pytest.ini_options]
 minversion = "8.0"
