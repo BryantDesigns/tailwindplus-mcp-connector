@@ -125,6 +125,26 @@ uv run --directory /path/to/tailwindplus-mcp-connector \
 
 ---
 
+## Claude Desktop
+
+Claude Desktop requires HTTPS for HTTP-based MCP servers and does not permit localhost URLs. Use [ngrok](https://ngrok.com/) to expose the server:
+
+```bash
+# Terminal 1: start the MCP server over HTTP
+uv run tailwindplus-mcp-connector --transport http --tailwindplus-data /path/to/components.json
+
+# Terminal 2: tunnel via ngrok (terminates TLS at its edge)
+ngrok http 8000
+```
+
+Then add the ngrok URL (`https://<id>.ngrok-free.app/mcp`) as a custom connector in Claude Desktop (Settings > Connectors > Add custom connector).
+
+ngrok handles TLS termination, so the MCP server itself runs plain HTTP.
+
+Claude Desktop also supports **MCP Apps**, which renders component previews visually in the conversation rather than returning raw HTML. This activates automatically when using the `get_component_preview_by_full_name` tool.
+
+---
+
 ## Tips
 
 The TailwindPlus components JSON file has a **version** (timestamp of the download).
@@ -230,7 +250,7 @@ Retrieve component code for a specific component.
 
 ### `get_component_preview_by_full_name`
 
-Same parameters as `get_component_by_full_name`; returns the **preview HTML** instead of the component code.
+Same parameters as `get_component_by_full_name`; returns the **preview HTML** instead of the component code. In Claude Desktop, this renders the component visually via MCP Apps rather than returning raw HTML.
 
 ### `list_tailwindplus_information`
 
