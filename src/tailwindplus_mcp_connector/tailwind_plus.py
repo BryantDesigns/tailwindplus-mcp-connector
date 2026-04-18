@@ -10,6 +10,65 @@ from packaging.version import Version
 from platformdirs import user_cache_dir
 
 
+# MCP Apps viewer template derived from the common TailwindPlus preview shell.
+# The ontoolresult callback receives full preview HTML, extracts the <style>
+# and <body> content, and injects them into this template's DOM.
+_PREVIEW_VIEWER_HTML = """\
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@insiders" type="module"></script>
+<style id="tw-component-css"></style>
+<script src="/plus-assets/build/iframe/components.js?hash=25df7d34d043de1c316a31211aa744b1"></script>
+<link rel="modulepreload" href="https://tailwindcss.com/plus-assets/build/assets/iframe-BUCe_xEG.js" />
+<script type="module" src="https://tailwindcss.com/plus-assets/build/assets/iframe-BUCe_xEG.js"></script>
+<style>body {{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }}</style>
+<body>
+<div id="preview-container"></div>
+<script type="module">
+  import {{ App }} from "https://unpkg.com/@modelcontextprotocol/ext-apps@1.2.2/app-with-deps";
+
+  const app = new App({{ name: "TailwindPlus Preview", version: "{mcp_server_version}" }});
+
+  app.ontoolresult = ({{ content }}) => {{
+    const text = content?.find(c => c.type === "text");
+    if (!text) return;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text.text, "text/html");
+
+    // Extract compiled component CSS from the preview HTML
+    const styles = doc.querySelectorAll("style");
+    let componentCSS = "";
+    for (const style of styles) {{
+      if (style.textContent.includes("tailwindcss")) {{
+        componentCSS = style.textContent;
+        break;
+      }}
+    }}
+    document.getElementById("tw-component-css").textContent = componentCSS;
+
+    // Extract component markup from the preview body
+    document.getElementById("preview-container").innerHTML = doc.body.innerHTML;
+  }};
+
+  await app.connect();
+</script>
+</body>
+"""
+
+
+def get_preview_viewer_html() -> str:
+    """Return the MCP Apps viewer HTML for rendering TailwindPlus component previews."""
+    from importlib.metadata import version as mcp_server_version
+
+    return _PREVIEW_VIEWER_HTML.format(
+        mcp_server_version=mcp_server_version("tailwindplus-mcp-connector")
+    )
+
+
 class Framework(Enum):
     HTML = "html"
     REACT = "react"
@@ -123,7 +182,7 @@ class TailwindPlus:
         if self._cache_is_stale(cache_path, data_file):
             self._build_cache(data_file, cache_path)
         else:
-            self._db = sqlite3.connect(cache_path)
+            self._db = sqlite3.connect(cache_path, check_same_thread=False)
             self._db.row_factory = sqlite3.Row
             self._load_metadata_from_db()
 
@@ -200,7 +259,7 @@ class TailwindPlus:
         if os.path.exists(cache_path):
             os.remove(cache_path)
 
-        self._db = sqlite3.connect(cache_path)
+        self._db = sqlite3.connect(cache_path, check_same_thread=False)
         self._db.row_factory = sqlite3.Row
         self._create_tables()
         self._populate_db(raw_data["tailwindplus"])
